@@ -18,10 +18,13 @@ Activar el entorno virtual:
 source .venv/bin/activate
 ```
 Instalar dependencias
+
 ```bash
-python -m pip install -r requirements.txt```
+python -m pip install -r requirements.txt
+```
 
 Arrancar servidor
+
 ```bash
 uvicorn main:app --reload
 ```

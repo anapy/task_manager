@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -24,7 +24,7 @@ class Task(Base):
     list_id = Column(Integer, ForeignKey("lists.id"))
 
     list = relationship("List", back_populates="tasks")
-    list = relationship("Reminder", back_populates="tasks")
+    reminders = relationship("Reminder", back_populates="task")
 
 
 class Reminder(Base):

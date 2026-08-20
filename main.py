@@ -91,3 +91,90 @@ def delete_list(list_id: int, db: Session = Depends(get_db)):
     return {
         "message": "Lista eliminada correctamente"
     }
+
+@app.get("/tasks", response_model=list[schemas.TaskResponse])
+def get_tasks(db: Session = Depends(get_db)):
+    return db.query(models.Task).all()
+
+@app.post("/tasks", response_model=schemas.TaskResponse)
+def create_task(
+    task_data: schemas.TaskCreate,
+    db: Session = Depends(get_db)
+):
+    list_item = db.query(models.List).filter(
+        models.List.id == task_data.list_id
+    ).first()
+
+    if list_item is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Lista no encontrada"
+        )
+
+    new_task = models.Task(
+        title=task_data.title,
+        description=task_data.description,
+        list_id=task_data.list_id
+    )
+
+    db.add(new_task)
+    db.commit()
+    db.refresh(new_task)
+
+    return new_task
+
+@app.get("/tasks/{task_id}", response_model=schemas.TaskResponse)
+def get_task(task_id: int, db: Session = Depends(get_db)):
+    task_item = db.query(models.Task).filter(models.Task.id == task_id).first()
+
+    if task_item is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Lista no encontrada"
+        )
+
+    return task_item
+
+@app.put("/tasks/{task_id}", response_model=schemas.TaskResponse)
+def update_list(
+    task_id: int,
+    task_data: schemas.TaskUpdate,
+    db: Session = Depends(get_db)
+):
+    task = db.query(models.Task).filter(
+        models.Task.id == task_id
+    ).first()
+
+    if task is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Tarea no encontrada"
+        )
+
+    task.title = task_data.title
+    task.description = task_data.description
+    task.completed = task_data.completed
+
+    db.commit()
+    db.refresh(task)
+
+    return task
+
+@app.delete("/tasks/{task_id}")
+def delete_list(task_id: int, db: Session = Depends(get_db)):
+    task = db.query(models.Task).filter(
+        models.Task.id == task_id
+    ).first()
+
+    if task is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Tarea no encontrada"
+        )
+
+    db.delete(task)
+    db.commit()
+
+    return {
+        "message": "Tarea eliminada correctamente"
+    }

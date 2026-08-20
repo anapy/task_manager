@@ -13,3 +13,25 @@ class ListResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class TaskCreate(BaseModel):
+    title: str
+    description: str | None = None
+    list_id: int
+
+
+class TaskUpdate(BaseModel):
+    title: str
+    description: str | None = None
+    completed: bool
+
+
+class TaskResponse(BaseModel):
+    id: int
+    title: str
+    description: str | None
+    completed: bool
+    list_id: int
+
+    class Config:
+        from_attributes = True

@@ -84,6 +84,17 @@ def delete_list(list_id: int, db: Session = Depends(get_db)):
             status_code=404,
             detail="Lista no encontrada"
         )
+    
+    pending_tasks = db.query(models.Task).filter(
+        models.Task.list_id == list_id
+    ).first()
+
+    if pending_tasks is not None:
+        raise HTTPException(
+            status_code=404,
+            detail="Quedan tareas pendientes"
+        )
+
 
     db.delete(list_item)
     db.commit()
